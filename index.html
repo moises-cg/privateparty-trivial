@@ -1049,7 +1049,7 @@
   .question-img {
     width: 100%;
     display: none;
-    margin-top: 16px;
+    margin-top: 12px;
     animation: fadeIn 0.4s ease forwards;
     opacity: 0;
   }
@@ -1060,9 +1060,17 @@
 
   .question-img img {
     width: 100%;
+    max-height: 35vh;
+    object-fit: contain;
     border-radius: 10px;
     border: 2px solid rgba(196,28,28,0.4);
     box-shadow: 0 0 30px rgba(196,28,28,0.2);
+  }
+
+  @media (min-width: 640px) {
+    .question-img img {
+      max-height: 45vh;
+    }
   }
 
   .autodestruct {
