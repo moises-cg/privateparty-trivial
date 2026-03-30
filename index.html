@@ -7,10 +7,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --red: #c41c1c;
-    --red-bright: #ff2a2a;
-    --red-glow: rgba(196,28,28,0.6);
-    --red-dim: #4a0a0a;
+    --red: #e63333;
+    --red-bright: #ff4d4d;
+    --red-glow: rgba(230,51,51,0.6);
+    --red-dim: #5a1010;
     --dark-bg: #0a0000;
     --card-bg: rgba(196,28,28,0.04);
     --card-border: rgba(196,28,28,0.15);
@@ -25,8 +25,11 @@
     background: var(--dark-bg);
     color: #fff;
     min-height: 100vh;
+    min-height: 100dvh;
     overflow-x: hidden;
     position: relative;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
   }
 
   /* Scanline overlay */
@@ -93,6 +96,169 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+  }
+
+  /* ==================== INTRO OVERLAY ==================== */
+  #intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  #intro-overlay.hidden {
+    display: none;
+  }
+
+  #intro-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  #intro-glitch {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+
+  .intro-center-text {
+    position: relative;
+    z-index: 2;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .intro-center-text.visible {
+    opacity: 1;
+    animation: slamIn 0.3s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes slamIn {
+    0% { opacity: 0; transform: scale(3); filter: blur(20px) brightness(3); }
+    40% { opacity: 1; transform: scale(0.9); filter: blur(0) brightness(1.5); }
+    60% { transform: scale(1.1); filter: brightness(1.2); }
+    80% { transform: scale(0.98); }
+    100% { opacity: 1; transform: scale(1); filter: brightness(1); }
+  }
+
+  .intro-real {
+    font-size: clamp(3.5rem, 14vw, 8rem);
+    color: var(--red-bright);
+    text-shadow:
+      0 0 30px var(--red-glow),
+      0 0 80px var(--red-glow),
+      0 0 160px rgba(196,28,28,0.5),
+      0 0 250px rgba(196,28,28,0.3);
+    letter-spacing: 8px;
+    animation: glitchShake 0.1s infinite, realPulse 0.5s ease-in-out infinite alternate;
+    position: relative;
+  }
+
+  /* Duplicated glitch layers */
+  .intro-real::before,
+  .intro-real::after {
+    content: '¿ERES UN REAL?';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .intro-real::before {
+    color: #ff0000;
+    animation: glitchLayer1 0.2s infinite;
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+    opacity: 0.8;
+  }
+
+  .intro-real::after {
+    color: #8b0000;
+    animation: glitchLayer2 0.25s infinite;
+    clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+    opacity: 0.8;
+  }
+
+  @keyframes glitchLayer1 {
+    0% { transform: translate(0, 0); }
+    20% { transform: translate(-8px, -3px) skewX(-4deg); }
+    40% { transform: translate(6px, 2px); }
+    60% { transform: translate(-4px, 0) skewX(2deg); }
+    80% { transform: translate(10px, -2px); }
+    100% { transform: translate(0, 0); }
+  }
+
+  @keyframes glitchLayer2 {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(7px, 3px) skewX(3deg); }
+    50% { transform: translate(-5px, -1px); }
+    75% { transform: translate(8px, 2px) skewX(-2deg); }
+    100% { transform: translate(0, 0); }
+  }
+
+  @keyframes realPulse {
+    from { filter: brightness(1); }
+    to { filter: brightness(1.4); }
+  }
+
+  .intro-final {
+    font-size: clamp(1.2rem, 4vw, 2rem);
+    color: #fff;
+    letter-spacing: 3px;
+    line-height: 1.6;
+    text-shadow: 0 0 15px rgba(255,255,255,0.3);
+  }
+
+  .intro-final .highlight {
+    color: var(--red-bright);
+    text-shadow: 0 0 20px var(--red-glow);
+  }
+
+  @keyframes glitchShake {
+    0% { transform: translate(0, 0) skewX(0deg); }
+    15% { transform: translate(-5px, 3px) skewX(-4deg); }
+    30% { transform: translate(6px, -2px) skewX(3deg); }
+    45% { transform: translate(-3px, -4px) skewX(-2deg); }
+    60% { transform: translate(4px, 2px) skewX(5deg); }
+    75% { transform: translate(-6px, -1px) skewX(-3deg); }
+    90% { transform: translate(3px, 3px) skewX(2deg); }
+    100% { transform: translate(0, 0) skewX(0deg); }
+  }
+
+  /* Pixelation / static noise overlay */
+  @keyframes staticNoise {
+    0% { background-position: 0 0; }
+    25% { background-position: -100px -50px; }
+    50% { background-position: 50px -100px; }
+    75% { background-position: -50px 50px; }
+    100% { background-position: 0 0; }
+  }
+
+  #intro-static {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E");
+    background-size: 256px 256px;
+    mix-blend-mode: overlay;
+    animation: staticNoise 0.1s steps(4) infinite;
   }
 
   /* ==================== SCREENS ==================== */
@@ -678,6 +844,107 @@
     text-shadow: 0 0 10px var(--red-glow);
   }
 
+  /* ==================== MOBILE ==================== */
+  @media (max-width: 600px) {
+    .game-container {
+      padding: 16px 14px;
+    }
+
+    .welcome-title {
+      font-size: clamp(2.5rem, 12vw, 5rem);
+      letter-spacing: 2px;
+    }
+
+    .welcome-title .line-1 {
+      letter-spacing: 8px;
+    }
+
+    .btn-play {
+      padding: 14px 40px;
+      font-size: 1rem;
+      letter-spacing: 4px;
+    }
+
+    .question-card {
+      padding: 24px 16px;
+    }
+
+    .question-text {
+      font-size: clamp(0.9rem, 3.5vw, 1.3rem);
+      margin-bottom: 24px;
+    }
+
+    .options-grid.two-col,
+    .options-grid.four-col {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .btn-option {
+      font-size: 0.9rem;
+      padding: 14px 16px;
+    }
+
+    .feedback {
+      padding: 16px;
+    }
+
+    .feedback-text {
+      font-size: 0.8rem;
+    }
+
+    .btn-next {
+      padding: 12px 32px;
+      font-size: 0.85rem;
+    }
+
+    .results-score {
+      font-size: clamp(4rem, 16vw, 7rem);
+    }
+
+    .btn-replay {
+      padding: 14px 40px;
+      font-size: 0.9rem;
+    }
+
+    .countdown-number {
+      font-size: clamp(5rem, 22vw, 10rem);
+    }
+
+    .secret-text {
+      font-size: clamp(1rem, 3.5vw, 1.5rem);
+    }
+
+    .flag-container {
+      width: 150px;
+      height: 100px;
+    }
+
+    .gameover-title {
+      font-size: clamp(2rem, 8vw, 4rem);
+    }
+
+    .gameover-ha {
+      font-size: clamp(1.2rem, 5vw, 2rem);
+    }
+
+    .gameover-msg {
+      font-size: 0.9rem;
+      padding: 0 10px;
+    }
+
+    /* Intro */
+    .intro-real {
+      font-size: clamp(2.2rem, 10vw, 4rem) !important;
+      letter-spacing: 3px;
+    }
+
+    .intro-final {
+      font-size: clamp(0.9rem, 3.5vw, 1.4rem) !important;
+      padding: 0 16px;
+    }
+  }
+
   /* ==================== GAME OVER ==================== */
   .gameover-title {
     font-family: 'Orbitron', sans-serif;
@@ -715,6 +982,22 @@
 </head>
 <body>
 
+<!-- INTRO OVERLAY -->
+<div id="intro-overlay">
+  <canvas id="intro-canvas"></canvas>
+  <canvas id="intro-glitch"></canvas>
+  <div id="intro-static"></div>
+  <div class="intro-center-text" id="intro-real">
+    <div class="intro-real">¿ERES UN REAL?</div>
+  </div>
+  <div class="intro-center-text" id="intro-final" style="position:absolute;inset:0;display:flex;justify-content:center;align-items:center;">
+    <div class="intro-final" style="text-align:center;">
+      ACIERTA LAS <span class="highlight">4 PREGUNTAS</span><br>
+      Y RECIBE UNA <span class="highlight">NUEVA PISTA</span>
+    </div>
+  </div>
+</div>
+
 <canvas id="matrix-bg"></canvas>
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
@@ -730,7 +1013,6 @@
     </h1>
     <div class="deco-line"></div>
     <p class="welcome-subtitle">// festival de fiestas <span class="cursor-blink"></span></p>
-    <p class="welcome-intro">¿Quieres descubrir la pista?<br>Esta es solo para los reales.<br>Adivina las 4 preguntas.<br><strong>Si fallas una, estás fuera.</strong></p>
     <button class="btn-play" onclick="startGame()">ACCEDER</button>
   </div>
 
@@ -785,12 +1067,234 @@
       </div>
     </div>
     <div class="secret-text" id="secret-text"></div>
-    <button class="btn-secret-back" onclick="restartGame()">[ reintentar ]</button>
+    <p class="secret-warning" style="animation:none; margin-top: 16px;">// NO LE CUENTES A NADIE... //</p>
   </div>
 
 </div>
 
 <script>
+// ==================== INTRO SEQUENCE ====================
+(function() {
+  const overlay = document.getElementById('intro-overlay');
+  const canvas = document.getElementById('intro-canvas');
+  const ctx = canvas.getContext('2d');
+  const glitchCanvas = document.getElementById('intro-glitch');
+  const glitchCtx = glitchCanvas.getContext('2d');
+  const staticEl = document.getElementById('intro-static');
+
+  function resize() {
+    canvas.width = glitchCanvas.width = window.innerWidth;
+    canvas.height = glitchCanvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // HA HA HA Matrix rain - floods the screen
+  const haChars = ['H','A',' ','H','A',' ','H','A',' ','H','A'];
+  const fontSize = 18;
+  let cols = Math.floor(canvas.width / fontSize);
+  let drops = [];
+  for (let i = 0; i < cols; i++) {
+    drops[i] = Math.random() * -50;
+  }
+
+  let phase = 0; // 0=rain, 1=blackPause, 2=real?, 3=blackPause2, 4=final, 5=done
+  let phaseStart = performance.now();
+  let flickerIntensity = 0;
+  let shakeAmount = 0;
+  let stopRain = false;
+
+  // Glitch bars
+  function drawGlitchBars() {
+    glitchCtx.clearRect(0, 0, glitchCanvas.width, glitchCanvas.height);
+    const numBars = Math.floor(Math.random() * 8) + 3;
+    for (let i = 0; i < numBars; i++) {
+      const y = Math.random() * glitchCanvas.height;
+      const h = Math.random() * 6 + 1;
+      const offset = (Math.random() - 0.5) * 30;
+      glitchCtx.save();
+      glitchCtx.fillStyle = Math.random() > 0.5
+        ? `rgba(196, 28, 28, ${Math.random() * 0.6})`
+        : `rgba(255, 0, 0, ${Math.random() * 0.3})`;
+      glitchCtx.fillRect(offset, y, glitchCanvas.width, h);
+      glitchCtx.restore();
+    }
+    // Random blocks
+    if (Math.random() > 0.6) {
+      const bx = Math.random() * glitchCanvas.width;
+      const by = Math.random() * glitchCanvas.height;
+      const bw = Math.random() * 200 + 50;
+      const bh = Math.random() * 30 + 5;
+      glitchCtx.fillStyle = `rgba(${Math.random() > 0.5 ? '196,28,28' : '0,0,0'}, ${Math.random() * 0.8})`;
+      glitchCtx.fillRect(bx, by, bw, bh);
+    }
+  }
+
+  // Screen flicker (red/black flash)
+  function applyFlicker(elapsed) {
+    if (phase === 0 && elapsed > 1500) {
+      flickerIntensity = Math.min(1, (elapsed - 1500) / 2000);
+    }
+    if (flickerIntensity > 0 && Math.random() > (1 - flickerIntensity * 0.4)) {
+      const r = Math.random();
+      if (r > 0.7) {
+        ctx.fillStyle = `rgba(196, 28, 28, ${Math.random() * 0.3})`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      } else if (r > 0.4) {
+        ctx.fillStyle = `rgba(0, 0, 0, ${Math.random() * 0.8})`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+  }
+
+  // Pixelation effect
+  function applyPixelation(elapsed) {
+    if (phase >= 1) {
+      staticEl.style.opacity = Math.min(0.4, (elapsed - 3500) / 1000 * 0.4);
+    }
+  }
+
+  function drawRain() {
+    // Trail effect - red-tinted black
+    ctx.fillStyle = 'rgba(10, 0, 0, 0.08)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < drops.length; i++) {
+      // Alternate red intensities for chaos
+      const bright = Math.random();
+      if (bright > 0.7) {
+        ctx.fillStyle = '#ff2a2a';
+        ctx.font = `bold ${fontSize}px Share Tech Mono`;
+      } else if (bright > 0.3) {
+        ctx.fillStyle = `rgba(196, 28, 28, ${0.4 + Math.random() * 0.5})`;
+        ctx.font = `${fontSize}px Share Tech Mono`;
+      } else {
+        ctx.fillStyle = `rgba(100, 10, 10, ${0.3 + Math.random() * 0.3})`;
+        ctx.font = `${fontSize}px Share Tech Mono`;
+      }
+
+      const charIdx = Math.floor(Math.random() * haChars.length);
+      const char = haChars[charIdx];
+
+      // Shake offset
+      const sx = (Math.random() - 0.5) * shakeAmount;
+      const sy = (Math.random() - 0.5) * shakeAmount;
+
+      ctx.fillText(char, i * fontSize + sx, drops[i] * fontSize + sy);
+
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.96) {
+        drops[i] = 0;
+      }
+      drops[i] += 0.6 + Math.random() * 0.8;
+    }
+  }
+
+  // Big HA HA HA text that floods randomly
+  let bigHAs = [];
+  function spawnBigHA() {
+    bigHAs.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 60 + 30,
+      opacity: 1,
+      decay: 0.01 + Math.random() * 0.03,
+      text: 'HA HA HA',
+      rot: (Math.random() - 0.5) * 0.5
+    });
+  }
+
+  function drawBigHAs() {
+    bigHAs = bigHAs.filter(h => h.opacity > 0);
+    bigHAs.forEach(h => {
+      ctx.save();
+      ctx.translate(h.x, h.y);
+      ctx.rotate(h.rot);
+      ctx.font = `900 ${h.size}px Orbitron`;
+      ctx.fillStyle = `rgba(255, 42, 42, ${h.opacity})`;
+      ctx.shadowColor = 'rgba(196, 28, 28, 0.8)';
+      ctx.shadowBlur = 20;
+      ctx.fillText(h.text, 0, 0);
+      ctx.restore();
+      h.opacity -= h.decay;
+    });
+  }
+
+  let animId;
+  function animate(now) {
+    const elapsed = now - phaseStart;
+
+    // Phase transitions
+    // Phase 0: HA HA rain for 3s, then start fading them out
+    // After 3s of HA rain, go straight to ¿ERES UN REAL?
+    if (phase === 0 && elapsed > 3000) {
+      phase = 1;
+      phaseStart = now;
+      stopRain = true;
+      bigHAs = [];
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      glitchCtx.clearRect(0, 0, glitchCanvas.width, glitchCanvas.height);
+      document.getElementById('intro-real').classList.add('visible');
+      shakeAmount = 8;
+    }
+    // After 1.3s, swap to final message immediately
+    else if (phase === 1 && elapsed > 1300) {
+      phase = 2;
+      phaseStart = now;
+      document.getElementById('intro-real').classList.remove('visible');
+      document.getElementById('intro-final').classList.add('visible');
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      glitchCtx.clearRect(0, 0, glitchCanvas.width, glitchCanvas.height);
+      shakeAmount = 2;
+    }
+    // After 1.4s, fade out to main page
+    else if (phase === 2 && elapsed > 1600) {
+      phase = 4;
+      // Fade out
+      overlay.style.transition = 'opacity 0.8s ease';
+      overlay.style.opacity = '0';
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+        cancelAnimationFrame(animId);
+      }, 800);
+      return;
+    }
+
+    // Draw rain ONLY in phase 0
+    if (phase === 0) {
+      drawRain();
+      // Spawn big HAs
+      if (elapsed > 800) {
+        if (Math.random() > 0.7) spawnBigHA();
+        if (elapsed > 1500 && Math.random() > 0.5) spawnBigHA();
+        if (elapsed > 2500 && Math.random() > 0.3) spawnBigHA();
+      }
+    }
+
+    // Phase 0: draw big HAs and glitch bars
+    if (phase === 0) {
+      drawBigHAs();
+      applyFlicker(elapsed);
+      if (Math.random() > 0.6) drawGlitchBars();
+    }
+
+    // Phase 1: ¿ERES UN REAL? - glitch bars
+    if (phase === 1) {
+      if (Math.random() > 0.7) drawGlitchBars();
+    }
+
+    // Phase 2: final message - clean
+    if (phase === 2) {
+      glitchCtx.clearRect(0, 0, glitchCanvas.width, glitchCanvas.height);
+    }
+
+    animId = requestAnimationFrame(animate);
+  }
+
+  animId = requestAnimationFrame(animate);
+})();
+
 // ==================== MATRIX RAIN BACKGROUND ====================
 const matrixCanvas = document.getElementById('matrix-bg');
 const matrixCtx = matrixCanvas.getContext('2d');
@@ -1001,7 +1505,7 @@ function showCountdown() {
 
 function showSecret() {
   showScreen('secret-screen');
-  const fullText = 'Y PONES UNA BANDERA DE CANARIAS ONDEANDO';
+  const fullText = 'HAY UN ARTISTA CANARIO';
   const el = document.getElementById('secret-text');
   el.textContent = '';
   let i = 0;
