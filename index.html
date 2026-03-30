@@ -1045,38 +1045,24 @@
 
   .loading-text.hide { display: none; }
 
-  /* Image popup modal */
-  .img-popup-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    z-index: 200;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+  /* Question inline image */
+  .question-img {
+    width: 100%;
+    display: none;
+    margin-top: 16px;
     animation: fadeIn 0.4s ease forwards;
     opacity: 0;
   }
 
-  .img-popup-overlay img {
-    max-width: 85%;
-    max-height: 70vh;
-    border-radius: 12px;
+  .question-img.show {
+    display: block;
+  }
+
+  .question-img img {
+    width: 100%;
+    border-radius: 10px;
     border: 2px solid rgba(196,28,28,0.4);
-    box-shadow: 0 0 40px rgba(196,28,28,0.3);
-    animation: scaleIn 0.4s ease;
-    object-fit: contain;
-  }
-
-  .img-popup-overlay.closing {
-    opacity: 1;
-    animation: fadeOut 0.4s ease forwards;
-  }
-
-  @keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
+    box-shadow: 0 0 30px rgba(196,28,28,0.2);
   }
 
   .autodestruct {
@@ -1161,6 +1147,7 @@
       <div class="feedback-verdict" id="feedback-verdict"></div>
       <div class="feedback-text" id="feedback-text"></div>
     </div>
+    <div class="question-img" id="question-img"></div>
     <button class="btn-next" id="btn-next" onclick="nextQuestion()">[ siguiente ]</button>
   </div>
 
@@ -1631,8 +1618,12 @@ function renderQuestion() {
   const fb = document.getElementById('feedback');
   fb.classList.remove('show', 'correct-fb', 'incorrect-fb');
   document.getElementById('btn-next').classList.remove('show');
+  const imgContainer = document.getElementById('question-img');
+  imgContainer.classList.remove('show');
+  imgContainer.innerHTML = '';
 
   const card = document.querySelector('.question-card');
+  card.style.display = '';
   card.style.animation = 'none';
   card.offsetHeight;
   card.style.animation = '';
@@ -1672,28 +1663,14 @@ function selectAnswer(index) {
   }
   nextBtn.classList.add('show');
 
-  // Popup imagen en preguntas 1 y 3: deshabilitar botón hasta que termine
+  // Imagen inline en preguntas 1 y 3: reemplaza pregunta y opciones
   if (currentQ === 0 || currentQ === 2) {
-    nextBtn.disabled = true;
-    nextBtn.style.opacity = '0.3';
-    nextBtn.style.pointerEvents = 'none';
     const imgSrc = currentQ === 0 ? 'img-q1.png' : 'img-q3.png';
-    setTimeout(() => {
-      const overlay = document.createElement('div');
-      overlay.className = 'img-popup-overlay';
-      overlay.innerHTML = '<img src="' + imgSrc + '" alt="FDF">';
-      document.body.appendChild(overlay);
-
-      setTimeout(() => {
-        overlay.classList.add('closing');
-        setTimeout(() => {
-          overlay.remove();
-          nextBtn.disabled = false;
-          nextBtn.style.opacity = '';
-          nextBtn.style.pointerEvents = '';
-        }, 400);
-      }, 3500);
-    }, 1000);
+    const card = document.querySelector('.question-card');
+    card.style.display = 'none';
+    const imgContainer = document.getElementById('question-img');
+    imgContainer.innerHTML = '<img src="' + imgSrc + '" alt="FDF">';
+    imgContainer.classList.add('show');
   }
 }
 
