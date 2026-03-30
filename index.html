@@ -850,10 +850,14 @@
     75% { transform: perspective(300px) rotateY(4deg) skewY(-0.5deg); }
   }
 
-  .flag-stripe { width: 100%; height: 33.33%; }
-  .flag-stripe.white { background: #fff; }
-  .flag-stripe.blue { background: #003DA5; }
-  .flag-stripe.yellow { background: #FFD700; }
+  .flag-stripe {
+    height: 100%;
+    float: left;
+  }
+  .flag-stripe.white { width: 33.33%; background: #fff; }
+  .flag-stripe.blue { width: 33.33%; background: #003DA5; position: relative; }
+  .flag-stripe.yellow { width: 33.34%; background: #FECB00; }
+
 
   .flag-pole {
     position: absolute;
