@@ -428,6 +428,138 @@
     pointer-events: none;
     z-index: 10;
   }
+
+  /* ==================== SECRET SCREEN ==================== */
+  .countdown-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(8rem, 30vw, 14rem);
+    line-height: 1;
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 40px rgba(0,240,255,0.5));
+    animation: pulse 0.8s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  .countdown-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 6px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 24px;
+  }
+
+  .secret-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.4rem, 5vw, 2rem);
+    letter-spacing: 4px;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 20px rgba(255,230,0,0.4);
+    margin-bottom: 8px;
+    animation: fadeIn 0.6s ease;
+  }
+
+  .secret-warning {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 2px;
+    margin-bottom: 32px;
+    animation: fadeIn 0.8s ease;
+  }
+
+  .secret-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.8rem, 6vw, 3rem);
+    letter-spacing: 2px;
+    text-align: center;
+    color: #fff;
+    line-height: 1.3;
+    max-width: 500px;
+    animation: secretReveal 1s ease;
+    margin-bottom: 32px;
+  }
+
+  @keyframes secretReveal {
+    from { opacity: 0; transform: translateY(20px) scale(0.9); filter: blur(10px); }
+    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  }
+
+  .flag-container {
+    position: relative;
+    width: 200px;
+    height: 133px;
+    margin-bottom: 40px;
+    animation: secretReveal 1.2s ease;
+  }
+
+  .flag {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    animation: wave 2s ease-in-out infinite;
+    box-shadow: 0 0 30px rgba(0,240,255,0.2);
+  }
+
+  @keyframes wave {
+    0%, 100% { transform: perspective(300px) rotateY(-3deg) skewY(0.5deg); }
+    25% { transform: perspective(300px) rotateY(3deg) skewY(-1deg); }
+    50% { transform: perspective(300px) rotateY(-2deg) skewY(0.8deg); }
+    75% { transform: perspective(300px) rotateY(4deg) skewY(-0.5deg); }
+  }
+
+  .flag-stripe {
+    width: 100%;
+    height: 33.33%;
+  }
+
+  .flag-stripe.white { background: #fff; }
+  .flag-stripe.blue { background: #003DA5; }
+  .flag-stripe.yellow { background: #FFD700; }
+
+  .flag-pole {
+    position: absolute;
+    left: -6px;
+    top: -10px;
+    width: 4px;
+    height: calc(100% + 20px);
+    background: linear-gradient(to bottom, #ccc, #888);
+    border-radius: 2px;
+  }
+
+  .flag-pole-top {
+    position: absolute;
+    left: -9px;
+    top: -16px;
+    width: 10px;
+    height: 10px;
+    background: #FFD700;
+    border-radius: 50%;
+  }
+
+  .btn-secret-back {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 4px;
+    padding: 14px 48px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-secret-back:hover {
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+  }
 </style>
 </head>
 <body>
@@ -471,6 +603,29 @@
     <div class="results-score" id="results-score"></div>
     <p class="results-message" id="results-message"></p>
     <button class="btn-replay" onclick="restartGame()">JUGAR DE NUEVO</button>
+  </div>
+
+  <!-- COUNTDOWN -->
+  <div id="countdown-screen" class="screen">
+    <div class="countdown-label">PISTA EN...</div>
+    <div class="countdown-number" id="countdown-number">5</div>
+  </div>
+
+  <!-- SECRET -->
+  <div id="secret-screen" class="screen">
+    <div class="secret-title">PISTA SECRETA</div>
+    <p class="secret-warning">NO SE LA CUENTES A NADIE</p>
+    <div class="flag-container">
+      <div class="flag-pole"></div>
+      <div class="flag-pole-top"></div>
+      <div class="flag">
+        <div class="flag-stripe white"></div>
+        <div class="flag-stripe blue"></div>
+        <div class="flag-stripe yellow"></div>
+      </div>
+    </div>
+    <div class="secret-text" id="secret-text"></div>
+    <button class="btn-secret-back" onclick="restartGame()">JUGAR DE NUEVO</button>
   </div>
 
 </div>
@@ -600,19 +755,64 @@ function nextQuestion() {
 }
 
 function showResults() {
-  showScreen('results');
-  document.getElementById('progress').style.width = '100%';
-  document.getElementById('results-score').textContent = `${score}/${questions.length}`;
-
-  let msg = '';
   const pct = score / questions.length;
-  if (pct === 1) msg = '¡Increíble! Lo sabes TODO sobre FDF. Eres una leyenda.';
-  else if (pct >= 0.5) msg = '¡No está mal! Pero aún te queda por descubrir sobre FDF.';
-  else msg = 'Necesitas venir a más ediciones de FDF...';
 
-  document.getElementById('results-message').textContent = msg;
+  if (pct === 1) {
+    // Perfect score — show countdown then secret
+    launchConfetti();
+    showCountdown();
+  } else {
+    showScreen('results');
+    document.getElementById('progress').style.width = '100%';
+    document.getElementById('results-score').textContent = `${score}/${questions.length}`;
 
-  if (pct >= 0.5) launchConfetti();
+    let msg = '';
+    if (pct >= 0.5) msg = '¡No está mal! Pero necesitas acertarlas TODAS para desbloquear la pista secreta.';
+    else msg = 'Necesitas venir a más ediciones de FDF... Aciértalas todas para ver la pista secreta.';
+
+    document.getElementById('results-message').textContent = msg;
+    if (pct >= 0.5) launchConfetti();
+  }
+}
+
+function showCountdown() {
+  showScreen('countdown-screen');
+  let count = 5;
+  const el = document.getElementById('countdown-number');
+  el.textContent = count;
+
+  const interval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      el.textContent = count;
+      // Re-trigger pulse
+      el.style.animation = 'none';
+      el.offsetHeight;
+      el.style.animation = '';
+    } else if (count === 0) {
+      el.textContent = '¿LISTO?';
+      el.style.fontSize = 'clamp(2rem, 10vw, 4rem)';
+    } else {
+      clearInterval(interval);
+      el.style.fontSize = '';
+      showSecret();
+    }
+  }, 1000);
+}
+
+function showSecret() {
+  showScreen('secret-screen');
+  // Typewriter effect for the secret text
+  const fullText = 'Y PONES UNA BANDERA DE CANARIAS ONDEANDO';
+  const el = document.getElementById('secret-text');
+  el.textContent = '';
+  let i = 0;
+  const typeInterval = setInterval(() => {
+    el.textContent += fullText[i];
+    i++;
+    if (i >= fullText.length) clearInterval(typeInterval);
+  }, 50);
+  launchConfetti();
 }
 
 function restartGame() {
