@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <title>TRIVIAL FDF</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
@@ -12,8 +14,8 @@
     --red-glow: rgba(230,51,51,0.6);
     --red-dim: #5a1010;
     --dark-bg: #0a0000;
-    --card-bg: rgba(196,28,28,0.04);
-    --card-border: rgba(196,28,28,0.15);
+    --card-bg: rgba(20,0,0,0.85);
+    --card-border: rgba(196,28,28,0.4);
     --correct: #00ff41;
     --incorrect: #ff2a2a;
   }
@@ -76,8 +78,13 @@
     z-index: 0;
     animation: float 10s ease-in-out infinite;
   }
-  .orb-1 { width: 400px; height: 400px; background: var(--red); top: -150px; right: -100px; }
-  .orb-2 { width: 350px; height: 350px; background: #8b0000; bottom: -100px; left: -80px; animation-delay: -4s; }
+  .orb-1 { width: 200px; height: 200px; background: var(--red); top: -80px; right: -60px; }
+  .orb-2 { width: 180px; height: 180px; background: #8b0000; bottom: -60px; left: -40px; animation-delay: -4s; }
+
+  @media (min-width: 640px) {
+    .orb-1 { width: 400px; height: 400px; top: -150px; right: -100px; }
+    .orb-2 { width: 350px; height: 350px; bottom: -100px; left: -80px; }
+  }
 
   @keyframes float {
     0%, 100% { transform: translate(0, 0) scale(1); }
@@ -88,10 +95,13 @@
   .game-container {
     position: relative;
     z-index: 1;
-    max-width: 600px;
+    max-width: 480px;
     margin: 0 auto;
-    padding: 24px 20px;
+    padding: 16px 16px;
+    padding-top: env(safe-area-inset-top, 16px);
+    padding-bottom: env(safe-area-inset-bottom, 16px);
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -261,6 +271,13 @@
     animation: staticNoise 0.1s steps(4) infinite;
   }
 
+  @media (min-width: 640px) {
+    .game-container {
+      max-width: 560px;
+      padding: 24px 20px;
+    }
+  }
+
   /* ==================== SCREENS ==================== */
   .screen { display: none; width: 100%; }
   .screen.active { display: flex; flex-direction: column; align-items: center; }
@@ -373,8 +390,8 @@
     font-size: 1.2rem;
     letter-spacing: 6px;
     padding: 18px 64px;
-    background: transparent;
-    border: 1px solid var(--red);
+    background: rgba(196,28,28,0.15);
+    border: 2px solid var(--red);
     color: var(--red-bright);
     cursor: pointer;
     position: relative;
@@ -383,6 +400,13 @@
     opacity: 0;
     animation: fadeIn 0.6s ease forwards 1.8s;
     text-shadow: 0 0 10px var(--red-glow);
+    box-shadow: 0 0 20px rgba(196,28,28,0.2);
+    min-height: 52px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-play:active {
+    transform: scale(0.96);
   }
 
   .btn-play::before {
@@ -424,22 +448,23 @@
   /* ==================== QUESTION ==================== */
   .question-counter {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.85rem;
-    letter-spacing: 3px;
-    color: rgba(196,28,28,0.4);
-    margin-bottom: 8px;
+    font-size: 1rem;
+    letter-spacing: 4px;
+    color: var(--red-bright);
+    text-shadow: 0 0 10px var(--red-glow);
+    margin-bottom: 10px;
     align-self: flex-start;
   }
 
   .question-counter::before {
     content: '> ';
-    color: var(--red);
+    color: var(--red-bright);
   }
 
   .progress-bar {
     width: 100%;
-    height: 2px;
-    background: rgba(196,28,28,0.1);
+    height: 3px;
+    background: rgba(196,28,28,0.2);
     margin-bottom: 48px;
     overflow: hidden;
   }
@@ -508,29 +533,42 @@
     font-family: 'Share Tech Mono', monospace;
     font-size: 1rem;
     padding: 16px 24px;
-    background: rgba(196,28,28,0.05);
-    border: 1px solid rgba(196,28,28,0.2);
-    color: rgba(255,255,255,0.8);
+    background: rgba(20,0,0,0.8);
+    border: 1px solid rgba(196,28,28,0.45);
+    color: rgba(255,255,255,0.9);
     cursor: pointer;
     transition: all 0.25s ease;
     position: relative;
     overflow: hidden;
     text-transform: uppercase;
+    min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    word-break: break-word;
+  }
+
+  .btn-option:active:not(.disabled) {
+    transform: scale(0.96);
   }
 
   .btn-option::before {
     content: '[ ';
     color: var(--red-dim);
+    white-space: pre;
   }
 
   .btn-option::after {
     content: ' ]';
     color: var(--red-dim);
+    white-space: pre;
   }
 
   .btn-option:hover:not(.disabled) {
-    background: rgba(196,28,28,0.15);
-    border-color: var(--red);
+    background: rgba(196,28,28,0.3);
+    border-color: var(--red-bright);
     color: #fff;
     text-shadow: 0 0 10px var(--red-glow);
     box-shadow: 0 0 20px rgba(196,28,28,0.1);
@@ -584,12 +622,12 @@
   }
 
   .feedback.correct-fb {
-    background: rgba(0,255,65,0.03);
+    background: rgba(0,255,65,0.1);
     border-left-color: var(--correct);
   }
 
   .feedback.incorrect-fb {
-    background: rgba(255,42,42,0.03);
+    background: rgba(255,42,42,0.1);
     border-left-color: var(--incorrect);
   }
 
@@ -607,7 +645,7 @@
   .feedback-text {
     font-size: 0.85rem;
     line-height: 1.7;
-    color: rgba(255,255,255,0.55);
+    color: rgba(255,255,255,0.7);
   }
 
   .btn-next {
@@ -616,14 +654,18 @@
     letter-spacing: 3px;
     padding: 14px 48px;
     margin-top: 32px;
-    background: transparent;
-    border: 1px solid rgba(196,28,28,0.25);
-    color: rgba(196,28,28,0.6);
+    background: rgba(20,0,0,0.7);
+    border: 1px solid rgba(196,28,28,0.5);
+    color: var(--red-bright);
     cursor: pointer;
     transition: all 0.3s ease;
     display: none;
     text-transform: uppercase;
+    min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
   }
+
+  .btn-next:active { transform: scale(0.96); }
 
   .btn-next.show { display: inline-block; }
 
@@ -673,15 +715,20 @@
     font-size: 1rem;
     letter-spacing: 4px;
     padding: 16px 56px;
-    background: transparent;
-    border: 1px solid var(--red);
+    background: rgba(196,28,28,0.15);
+    border: 2px solid var(--red);
     color: var(--red-bright);
     cursor: pointer;
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
     text-transform: uppercase;
+    box-shadow: 0 0 15px rgba(196,28,28,0.2);
+    min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
   }
+
+  .btn-replay:active { transform: scale(0.96); }
 
   .btn-replay::before {
     content: '';
@@ -740,27 +787,28 @@
   .secret-title {
     font-family: 'Orbitron', sans-serif;
     font-weight: 900;
-    font-size: clamp(1.2rem, 4vw, 1.6rem);
+    font-size: clamp(1.4rem, 5vw, 2rem);
     letter-spacing: 5px;
     color: var(--red-bright);
-    text-shadow: 0 0 20px var(--red-glow);
-    margin-bottom: 8px;
+    text-shadow: 0 0 20px var(--red-glow), 0 0 40px rgba(230,51,51,0.3);
+    margin-bottom: 12px;
     animation: fadeIn 0.6s ease;
   }
 
   .secret-warning {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.75rem;
-    color: rgba(196,28,28,0.35);
-    letter-spacing: 3px;
+    font-size: 0.9rem;
+    color: var(--red-bright);
+    text-shadow: 0 0 10px var(--red-glow);
+    letter-spacing: 4px;
     margin-bottom: 32px;
     animation: blink 2s step-end infinite;
   }
 
   .secret-text {
     font-family: 'Share Tech Mono', monospace;
-    font-size: clamp(1.2rem, 4vw, 1.8rem);
-    letter-spacing: 2px;
+    font-size: clamp(1.4rem, 5vw, 2.2rem);
+    letter-spacing: 3px;
     text-align: center;
     color: var(--correct);
     text-shadow: 0 0 15px rgba(0,255,65,0.4);
@@ -978,6 +1026,44 @@
     margin-bottom: 32px;
     animation: pulse 1s ease-in-out infinite;
   }
+
+  .loading-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    color: rgba(196,28,28,0.4);
+    margin-top: 16px;
+    opacity: 0;
+    animation: fadeIn 0.6s ease forwards 2s;
+  }
+
+  .loading-text.hide { display: none; }
+
+  .autodestruct {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: clamp(1rem, 3.5vw, 1.4rem);
+    letter-spacing: 4px;
+    color: var(--red-bright);
+    text-shadow: 0 0 15px var(--red-glow), 0 0 30px rgba(230,51,51,0.3);
+    text-align: center;
+    margin-top: 24px;
+    text-transform: uppercase;
+    display: none;
+  }
+
+  .autodestruct.show {
+    display: block;
+    animation: fadeIn 0.4s ease forwards;
+    opacity: 0;
+  }
+
+  .autodestruct .countdown-num {
+    font-size: clamp(3rem, 12vw, 5rem);
+    display: block;
+    margin-top: 8px;
+    animation: pulse 0.8s ease-in-out infinite;
+  }
 </style>
 </head>
 <body>
@@ -1013,7 +1099,14 @@
     </h1>
     <div class="deco-line"></div>
     <p class="welcome-subtitle">// festival de fiestas <span class="cursor-blink"></span></p>
-    <button class="btn-play" onclick="startGame()">ACCEDER</button>
+    <button class="btn-play" id="btn-play" onclick="handlePlay()" disabled>ACCEDER</button>
+    <p class="loading-text" id="loading-text">// comprobando acceso...</p>
+  </div>
+
+  <!-- BLOCKED -->
+  <div id="blocked-screen" class="screen">
+    <div class="gameover-title">BLOQUEADO</div>
+    <p class="gameover-msg">Ya has jugado desde este dispositivo.<br>Solo se puede jugar una vez.</p>
   </div>
 
   <!-- QUESTION -->
@@ -1036,7 +1129,6 @@
     <div class="results-label">puntuacion</div>
     <div class="results-score" id="results-score"></div>
     <p class="results-message" id="results-message"></p>
-    <button class="btn-replay" onclick="restartGame()">[ reintentar ]</button>
   </div>
 
   <!-- GAME OVER -->
@@ -1044,7 +1136,7 @@
     <div class="gameover-title">FUERA</div>
     <div class="gameover-ha">HAHAHAHA</div>
     <p class="gameover-msg">Has fallado. Esta pista no es para ti... o quizás sí, pero hoy no.</p>
-    <button class="btn-replay" onclick="restartGame()">[ reintentar ]</button>
+    <div class="autodestruct" id="gameover-autodestruct"></div>
   </div>
 
   <!-- COUNTDOWN -->
@@ -1068,6 +1160,7 @@
     </div>
     <div class="secret-text" id="secret-text"></div>
     <p class="secret-warning" style="animation:none; margin-top: 16px;">// NO LE CUENTES A NADIE... //</p>
+    <div class="autodestruct" id="autodestruct"></div>
   </div>
 
 </div>
@@ -1248,8 +1341,8 @@
       glitchCtx.clearRect(0, 0, glitchCanvas.width, glitchCanvas.height);
       shakeAmount = 2;
     }
-    // After 1.4s, fade out to main page
-    else if (phase === 2 && elapsed > 1600) {
+    // After 3.5s, fade out to main page
+    else if (phase === 2 && elapsed > 3500) {
       phase = 4;
       // Fade out
       overlay.style.transition = 'opacity 0.8s ease';
@@ -1339,6 +1432,91 @@ window.addEventListener('resize', () => {
   confetti.width = window.innerWidth;
   confetti.height = window.innerHeight;
 });
+
+// ==================== IP CHECK (Firebase + localStorage fallback) ====================
+const STORAGE_KEY = 'trivial_fdf_played_ips';
+const WHITELIST_IPS = ['127.0.0.1', '::1'];
+let playerIP = '';
+
+function hasPlayedLocal(ip) {
+  const played = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  return played.includes(ip);
+}
+
+function markPlayedLocal(ip) {
+  const played = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  if (!played.includes(ip)) {
+    played.push(ip);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(played));
+  }
+}
+
+async function markPlayed(ip) {
+  markPlayedLocal(ip);
+  if (window.firebaseMarkIP) {
+    await window.firebaseMarkIP(ip);
+  }
+}
+
+async function initIPCheck() {
+  const btn = document.getElementById('btn-play');
+  const loading = document.getElementById('loading-text');
+
+  // Get IP
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const data = await res.json();
+    playerIP = data.ip;
+  } catch {
+    playerIP = localStorage.getItem('trivial_fdf_device_id');
+    if (!playerIP) {
+      playerIP = 'device_' + Math.random().toString(36).substr(2, 12) + Date.now().toString(36);
+      localStorage.setItem('trivial_fdf_device_id', playerIP);
+    }
+  }
+
+  // Check localStorage first (fast)
+  if (!WHITELIST_IPS.includes(playerIP) && hasPlayedLocal(playerIP)) {
+    loading.classList.add('hide');
+    showScreen('blocked-screen');
+    return;
+  }
+
+  // Then check Firebase (authoritative)
+  async function checkFirebase() {
+    if (!window.firebaseCheckIP) return;
+    try {
+      const played = await window.firebaseCheckIP(playerIP);
+      if (played && !WHITELIST_IPS.includes(playerIP)) {
+        markPlayedLocal(playerIP); // sync localStorage
+        loading.classList.add('hide');
+        showScreen('blocked-screen');
+        return;
+      }
+    } catch {}
+    loading.classList.add('hide');
+    btn.disabled = false;
+  }
+
+  if (window.firebaseReady) {
+    await checkFirebase();
+  } else {
+    window.onFirebaseReady = checkFirebase;
+    // Timeout: if Firebase doesn't load in 3s, allow play anyway
+    setTimeout(() => {
+      if (btn.disabled) {
+        loading.classList.add('hide');
+        btn.disabled = false;
+      }
+    }, 3000);
+  }
+}
+
+function handlePlay() {
+  startGame();
+}
+
+initIPCheck();
 
 // ==================== GAME DATA ====================
 const questions = [
@@ -1470,11 +1648,37 @@ function nextQuestion() {
 }
 
 function showGameOver() {
+  markPlayed(playerIP);
   showScreen('gameover-screen');
+
+  setTimeout(() => {
+    const ad = document.getElementById('gameover-autodestruct');
+    ad.classList.add('show');
+    let count = 5;
+    ad.innerHTML = `// PISTA AUTODESTRUYÉNDOSE EN... //<span class="countdown-num">${count}</span>`;
+
+    const interval = setInterval(() => {
+      count--;
+      if (count > 0) {
+        ad.innerHTML = `// PISTA AUTODESTRUYÉNDOSE EN... //<span class="countdown-num">${count}</span>`;
+      } else {
+        clearInterval(interval);
+        const screen = document.getElementById('gameover-screen');
+        screen.style.transition = 'opacity 0.6s ease';
+        screen.style.opacity = '0';
+        setTimeout(() => {
+          showScreen('blocked-screen');
+          screen.style.opacity = '';
+          screen.style.transition = '';
+          ad.classList.remove('show');
+        }, 600);
+      }
+    }, 1000);
+  }, 3000);
 }
 
 function showResults() {
-  // Solo llega aquí si acertó todas
+  markPlayed(playerIP);
   launchConfetti();
   showCountdown();
 }
@@ -1505,7 +1709,7 @@ function showCountdown() {
 
 function showSecret() {
   showScreen('secret-screen');
-  const fullText = 'HAY UN ARTISTA CANARIO';
+  const fullText = atob('SEFZIFVOIEFSVElTVEEgQ0FOQVJJTw==');
   const el = document.getElementById('secret-text');
   el.textContent = '';
   let i = 0;
@@ -1515,10 +1719,34 @@ function showSecret() {
     if (i >= fullText.length) clearInterval(typeInterval);
   }, 50);
   launchConfetti();
-}
 
-function restartGame() {
-  startGame();
+  // After 5s, start autodestruct countdown
+  setTimeout(() => {
+    const ad = document.getElementById('autodestruct');
+    ad.classList.add('show');
+    ad.innerHTML = '// PISTA AUTODESTRUYÉNDOSE... //<span class="countdown-num">3</span>';
+
+    setTimeout(() => {
+      ad.innerHTML = '// PISTA AUTODESTRUYÉNDOSE... //<span class="countdown-num">2</span>';
+    }, 1000);
+
+    setTimeout(() => {
+      ad.innerHTML = '// PISTA AUTODESTRUYÉNDOSE... //<span class="countdown-num">1</span>';
+    }, 2000);
+
+    setTimeout(() => {
+      // Fade out everything
+      const screen = document.getElementById('secret-screen');
+      screen.style.transition = 'opacity 0.6s ease';
+      screen.style.opacity = '0';
+      setTimeout(() => {
+        showScreen('blocked-screen');
+        screen.style.opacity = '';
+        screen.style.transition = '';
+        ad.classList.remove('show');
+      }, 600);
+    }, 3000);
+  }, 5000);
 }
 
 // ==================== CONFETTI ====================
@@ -1578,5 +1806,50 @@ function launchConfetti() {
 }
 </script>
 
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBGiLWCD6ic202F7XMOYxFHrH2B6hRN9vA",
+  authDomain: "privateparty-3a9d1.firebaseapp.com",
+  projectId: "privateparty-3a9d1",
+  storageBucket: "privateparty-3a9d1.firebasestorage.app",
+  messagingSenderId: "1031023414574",
+  appId: "1:1031023414574:web:a138518e5e992a5cb1febf"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Expose Firebase functions to global scope for the game
+window.firebaseCheckIP = async function(ip) {
+  try {
+    const docRef = doc(db, 'trivial_played', ip.replace(/\./g, '_'));
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists();
+  } catch (e) {
+    console.error('Firebase check error:', e);
+    return false;
+  }
+};
+
+window.firebaseMarkIP = async function(ip) {
+  try {
+    const docRef = doc(db, 'trivial_played', ip.replace(/\./g, '_'));
+    await setDoc(docRef, {
+      ip: ip,
+      playedAt: serverTimestamp(),
+      userAgent: navigator.userAgent
+    });
+  } catch (e) {
+    console.error('Firebase save error:', e);
+  }
+};
+
+// Trigger IP check once Firebase is ready
+window.firebaseReady = true;
+if (window.onFirebaseReady) window.onFirebaseReady();
+</script>
 </body>
 </html>
