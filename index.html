@@ -184,6 +184,22 @@
     letter-spacing: 4px;
   }
 
+  .welcome-intro {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    line-height: 1.8;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards 1.3s;
+  }
+
+  .welcome-intro strong {
+    color: var(--red-bright);
+    text-shadow: 0 0 10px var(--red-glow);
+  }
+
   /* Play button */
   .btn-play {
     font-family: 'Orbitron', sans-serif;
@@ -199,7 +215,7 @@
     overflow: hidden;
     transition: all 0.3s ease;
     opacity: 0;
-    animation: fadeIn 0.6s ease forwards 1.4s;
+    animation: fadeIn 0.6s ease forwards 1.8s;
     text-shadow: 0 0 10px var(--red-glow);
   }
 
@@ -661,6 +677,40 @@
     color: var(--red-bright);
     text-shadow: 0 0 10px var(--red-glow);
   }
+
+  /* ==================== GAME OVER ==================== */
+  .gameover-title {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.5rem, 10vw, 5rem);
+    color: var(--red-bright);
+    text-shadow:
+      0 0 20px var(--red-glow),
+      0 0 60px var(--red-glow);
+    margin-bottom: 16px;
+    animation: glitchIn 0.6s ease;
+  }
+
+  .gameover-msg {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+    line-height: 1.7;
+    margin-bottom: 40px;
+    max-width: 350px;
+  }
+
+  .gameover-ha {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.5rem, 6vw, 2.5rem);
+    color: var(--red);
+    text-shadow: 0 0 20px var(--red-glow);
+    letter-spacing: 6px;
+    margin-bottom: 32px;
+    animation: pulse 1s ease-in-out infinite;
+  }
 </style>
 </head>
 <body>
@@ -680,6 +730,7 @@
     </h1>
     <div class="deco-line"></div>
     <p class="welcome-subtitle">// festival de fiestas <span class="cursor-blink"></span></p>
+    <p class="welcome-intro">¿Quieres descubrir la pista?<br>Esta es solo para los reales.<br>Adivina las 4 preguntas.<br><strong>Si fallas una, estás fuera.</strong></p>
     <button class="btn-play" onclick="startGame()">ACCEDER</button>
   </div>
 
@@ -703,6 +754,14 @@
     <div class="results-label">puntuacion</div>
     <div class="results-score" id="results-score"></div>
     <p class="results-message" id="results-message"></p>
+    <button class="btn-replay" onclick="restartGame()">[ reintentar ]</button>
+  </div>
+
+  <!-- GAME OVER -->
+  <div id="gameover-screen" class="screen">
+    <div class="gameover-title">FUERA</div>
+    <div class="gameover-ha">HAHAHAHA</div>
+    <p class="gameover-msg">Has fallado. Esta pista no es para ti... o quizás sí, pero hoy no.</p>
     <button class="btn-replay" onclick="restartGame()">[ reintentar ]</button>
   </div>
 
@@ -742,8 +801,8 @@ function resizeMatrix() {
 }
 resizeMatrix();
 
-const chars = '01001010110100101010011010010110100101'.split('');
-const fontSize = 14;
+const chars = 'HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA'.split('');
+const fontSize = 16;
 let columns = Math.floor(matrixCanvas.width / fontSize);
 let drops = Array(columns).fill(1);
 
@@ -884,11 +943,20 @@ function selectAnswer(index) {
   document.getElementById('feedback-text').textContent = q.explanation;
 
   const nextBtn = document.getElementById('btn-next');
-  nextBtn.textContent = currentQ < questions.length - 1 ? '[ siguiente ]' : '[ ver resultado ]';
+  if (!isCorrect) {
+    nextBtn.textContent = '[ estás fuera ]';
+  } else {
+    nextBtn.textContent = currentQ < questions.length - 1 ? '[ siguiente ]' : '[ ver resultado ]';
+  }
   nextBtn.classList.add('show');
 }
 
 function nextQuestion() {
+  // Si falló la anterior, game over directo
+  if (score <= currentQ) {
+    showGameOver();
+    return;
+  }
   currentQ++;
   if (currentQ >= questions.length) {
     showResults();
@@ -897,24 +965,14 @@ function nextQuestion() {
   }
 }
 
+function showGameOver() {
+  showScreen('gameover-screen');
+}
+
 function showResults() {
-  const pct = score / questions.length;
-
-  if (pct === 1) {
-    launchConfetti();
-    showCountdown();
-  } else {
-    showScreen('results');
-    document.getElementById('progress').style.width = '100%';
-    document.getElementById('results-score').textContent = `${score}/${questions.length}`;
-
-    let msg = '';
-    if (pct >= 0.5) msg = 'Acceso parcial. Necesitas acertarlas TODAS para desbloquear la pista secreta.';
-    else msg = 'Acceso denegado. Aciértalas todas para desbloquear la información clasificada.';
-
-    document.getElementById('results-message').textContent = msg;
-    if (pct >= 0.5) launchConfetti();
-  }
+  // Solo llega aquí si acertó todas
+  launchConfetti();
+  showCountdown();
 }
 
 function showCountdown() {
