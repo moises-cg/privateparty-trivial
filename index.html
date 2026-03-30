@@ -2,31 +2,37 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>TRIVIAL FDF</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --red: #c41c1c;
-    --red-bright: #ff2a2a;
-    --red-glow: rgba(196,28,28,0.6);
-    --red-dim: #4a0a0a;
-    --dark-bg: #0a0000;
-    --card-bg: rgba(196,28,28,0.04);
-    --card-border: rgba(196,28,28,0.15);
-    --correct: #00ff41;
-    --incorrect: #ff2a2a;
+    --bg: #000000;
+    --red: #dc2626;
+    --red-dark: #7f1d1d;
+    --red-glow: rgba(255,0,0,0.3);
+    --red-border: rgba(127,29,29,0.4);
+    --red-light: #f87171;
+    --correct: #39ff14;
+    --correct-glow: rgba(57,255,20,0.15);
+    --incorrect: #ef4444;
+    --incorrect-glow: rgba(239,68,68,0.15);
+    --neon-pink: #ff2d7b;
+    --neon-cyan: #00f0ff;
+    --neon-yellow: #ffe600;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: 'Share Tech Mono', monospace;
-    background: var(--dark-bg);
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
     color: #fff;
     min-height: 100vh;
+    min-height: 100dvh;
     overflow-x: hidden;
     position: relative;
+    -webkit-font-smoothing: antialiased;
   }
 
   /* Scanline overlay */
@@ -38,109 +44,264 @@
       0deg,
       transparent,
       transparent 2px,
-      rgba(0,0,0,0.15) 2px,
-      rgba(0,0,0,0.15) 4px
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
     );
     pointer-events: none;
     z-index: 100;
   }
 
-  /* Vignette */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%);
-    pointer-events: none;
-    z-index: 99;
-  }
-
-  /* Matrix rain canvas */
-  #matrix-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    opacity: 0.4;
-  }
-
-  /* Red glow orbs */
+  /* Subtle red ambient glow */
   .orb {
     position: fixed;
     border-radius: 50%;
     filter: blur(100px);
-    opacity: 0.2;
+    opacity: 0.15;
     pointer-events: none;
     z-index: 0;
     animation: float 10s ease-in-out infinite;
   }
-  .orb-1 { width: 400px; height: 400px; background: var(--red); top: -150px; right: -100px; }
-  .orb-2 { width: 350px; height: 350px; background: #8b0000; bottom: -100px; left: -80px; animation-delay: -4s; }
+  .orb-1 { width: 300px; height: 300px; background: #dc2626; top: -100px; right: -80px; }
+  .orb-2 { width: 250px; height: 250px; background: #991b1b; bottom: -80px; left: -60px; animation-delay: -4s; }
 
   @keyframes float {
     0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(20px, -15px) scale(1.05); }
+    33% { transform: translate(20px, -15px) scale(1.05); }
+    66% { transform: translate(-15px, 10px) scale(0.95); }
   }
 
   /* Container */
   .game-container {
     position: relative;
     z-index: 1;
-    max-width: 600px;
+    max-width: 480px;
     margin: 0 auto;
-    padding: 24px 20px;
+    padding: 20px 16px;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
   }
 
+  @media (min-width: 640px) {
+    .game-container {
+      max-width: 520px;
+      padding: 24px 20px;
+    }
+  }
+
   /* ==================== SCREENS ==================== */
   .screen { display: none; width: 100%; }
   .screen.active { display: flex; flex-direction: column; align-items: center; }
 
-  /* ==================== WELCOME ==================== */
-  .welcome-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(3.5rem, 14vw, 7rem);
-    font-weight: 900;
-    line-height: 0.9;
+  /* ==================== LANDING ==================== */
+  .landing-logo {
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .landing-logo::before {
+    content: '';
+    position: absolute;
+    inset: -40px;
+    background: rgba(0,0,0,0.8);
+    filter: blur(60px);
+    border-radius: 50%;
+    z-index: -1;
+  }
+
+  .landing-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 16vw, 8rem);
+    line-height: 0.85;
     text-align: center;
     letter-spacing: 4px;
     position: relative;
-    margin-bottom: 12px;
   }
 
-  .welcome-title .line-1 {
+  .landing-title .line-1 {
     display: block;
-    color: var(--red-bright);
-    text-shadow:
-      0 0 10px var(--red-glow),
-      0 0 40px var(--red-glow),
-      0 0 80px rgba(196,28,28,0.3);
+    color: #fff;
+    text-shadow: 0 0 20px rgba(255,255,255,0.2);
     font-size: 0.45em;
     letter-spacing: 14px;
     opacity: 0;
-    animation: glitchIn 0.8s ease forwards 0.3s;
+    animation: slideDown 0.8s ease forwards 0.3s;
   }
 
-  .welcome-title .line-2 {
+  .landing-title .line-2 {
     display: block;
-    color: var(--red-bright);
-    text-shadow:
-      0 0 10px var(--red-glow),
-      0 0 40px var(--red-glow),
-      0 0 80px rgba(196,28,28,0.3),
-      0 0 120px rgba(196,28,28,0.15);
+    color: var(--red);
+    text-shadow: 0 0 30px var(--red-glow), 0 0 60px rgba(255,0,0,0.15);
     opacity: 0;
-    animation: glitchIn 0.6s ease forwards 0.7s;
+    animation: scaleIn 0.6s ease forwards 0.7s;
   }
 
-  @keyframes glitchIn {
-    0% { opacity: 0; transform: translateX(-20px) skewX(-5deg); filter: blur(4px); }
-    50% { opacity: 0.8; transform: translateX(10px) skewX(2deg); filter: blur(0); }
-    70% { opacity: 0.6; transform: translateX(-5px) skewX(-1deg); }
-    100% { opacity: 1; transform: translateX(0) skewX(0); }
+  .landing-subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards 1s;
+  }
+
+  .deco-line {
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--red), transparent);
+    margin-bottom: 36px;
+    opacity: 0;
+    animation: fadeIn 1s ease forwards 0.9s;
+  }
+
+  /* Form — privateparty style */
+  .landing-form {
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards 1.2s;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: #fff;
+    text-shadow: 0 0 6px rgba(255,255,255,0.5);
+  }
+
+  .form-input {
+    width: 100%;
+    min-height: 48px;
+    background: rgba(0,0,0,0.8);
+    border: 1px solid var(--red-border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    -webkit-appearance: none;
+  }
+
+  .form-input::placeholder {
+    color: rgba(255,255,255,0.25);
+  }
+
+  .form-input:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 1px var(--red), 0 0 12px rgba(255,0,0,0.15);
+  }
+
+  /* Autofill */
+  .form-input:-webkit-autofill,
+  .form-input:-webkit-autofill:hover,
+  .form-input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px rgba(0,0,0,0.9) inset !important;
+    -webkit-text-fill-color: white !important;
+    caret-color: white !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  .form-error {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--red-light);
+    text-shadow: 0 0 8px rgba(255,100,100,0.5);
+    display: none;
+  }
+
+  .form-error.show { display: block; }
+
+  /* Play button — privateparty red style */
+  .btn-play {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    padding: 14px 48px;
+    margin-top: 4px;
+    background: var(--red);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px var(--red-glow);
+    min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-play:hover {
+    background: #ef4444;
+    box-shadow: 0 0 25px rgba(255,0,0,0.4);
+  }
+
+  .btn-play:active {
+    transform: scale(0.97);
+    background: #b91c1c;
+  }
+
+  /* Already played */
+  .already-played {
+    text-align: center;
+    padding: 24px;
+    display: none;
+  }
+
+  .already-played.show {
+    display: block;
+    animation: fadeIn 0.6s ease forwards;
+    opacity: 0;
+  }
+
+  .already-played-icon {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+  }
+
+  .already-played-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--red);
+    text-shadow: 0 0 10px var(--red-glow);
+    margin-bottom: 12px;
+  }
+
+  .already-played-sub {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.5;
+  }
+
+  /* ==================== ANIMATIONS ==================== */
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes scaleIn {
@@ -148,174 +309,125 @@
     to { opacity: 1; transform: scale(1); }
   }
 
-  .welcome-subtitle {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
-    color: rgba(196,28,28,0.5);
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    margin-bottom: 48px;
-    opacity: 0;
-    animation: fadeIn 0.8s ease forwards 1.1s;
-  }
-
   @keyframes fadeIn {
     to { opacity: 1; }
   }
 
-  .deco-line {
-    width: 160px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--red), transparent);
-    margin-bottom: 48px;
-    opacity: 0;
-    animation: fadeIn 1s ease forwards 1s;
-    position: relative;
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
-  .deco-line::after {
-    content: '///';
-    position: absolute;
-    top: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: var(--red-dim);
-    font-size: 0.7rem;
-    letter-spacing: 4px;
+  @keyframes feedbackIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Play button */
-  .btn-play {
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 700;
-    font-size: 1.2rem;
-    letter-spacing: 6px;
-    padding: 18px 64px;
-    background: transparent;
-    border: 1px solid var(--red);
-    color: var(--red-bright);
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    opacity: 0;
-    animation: fadeIn 0.6s ease forwards 1.4s;
-    text-shadow: 0 0 10px var(--red-glow);
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
   }
 
-  .btn-play::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--red);
-    transform: translateX(-101%);
-    transition: transform 0.3s ease;
-    z-index: -1;
+  @keyframes secretReveal {
+    from { opacity: 0; transform: translateY(20px) scale(0.9); filter: blur(10px); }
+    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
   }
 
-  .btn-play:hover {
-    color: #fff;
-    text-shadow: none;
-    box-shadow: 0 0 30px var(--red-glow), inset 0 0 30px rgba(196,28,28,0.1);
+  @keyframes wave {
+    0%, 100% { transform: perspective(300px) rotateY(-3deg) skewY(0.5deg); }
+    25% { transform: perspective(300px) rotateY(3deg) skewY(-1deg); }
+    50% { transform: perspective(300px) rotateY(-2deg) skewY(0.8deg); }
+    75% { transform: perspective(300px) rotateY(4deg) skewY(-0.5deg); }
   }
 
-  .btn-play:hover::before {
-    transform: translateX(0);
+  @keyframes flicker {
+    0%   { opacity: 0.95; }
+    2%   { opacity: 0.85; }
+    4%   { opacity: 1; }
+    8%   { opacity: 0.92; }
+    9%   { opacity: 1; }
+    20%  { opacity: 0.7; }
+    21%  { opacity: 0.9; }
+    22%  { opacity: 1; }
+    46%  { opacity: 0.6; }
+    47%  { opacity: 0.85; }
+    48%  { opacity: 1; }
+    80%  { opacity: 0.75; }
+    81%  { opacity: 0.95; }
+    82%  { opacity: 1; }
+    98%  { opacity: 0.65; }
+    99%  { opacity: 0.9; }
+    100% { opacity: 1; }
   }
 
-  /* Terminal blink cursor */
-  .cursor-blink {
-    display: inline-block;
-    width: 10px;
-    height: 2px;
-    background: var(--red-bright);
-    margin-left: 4px;
-    animation: blink 1s step-end infinite;
-    vertical-align: middle;
+  .flicker {
+    animation: flicker 4s linear infinite;
   }
 
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-  }
-
-  /* ==================== QUESTION ==================== */
+  /* ==================== QUESTION SCREEN ==================== */
   .question-counter {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.85rem;
-    letter-spacing: 3px;
-    color: rgba(196,28,28,0.4);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: rgba(255,255,255,0.3);
     margin-bottom: 8px;
     align-self: flex-start;
-  }
-
-  .question-counter::before {
-    content: '> ';
-    color: var(--red);
+    text-transform: uppercase;
   }
 
   .progress-bar {
     width: 100%;
     height: 2px;
-    background: rgba(196,28,28,0.1);
-    margin-bottom: 48px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 1px;
+    margin-bottom: 32px;
     overflow: hidden;
   }
 
   .progress-fill {
     height: 100%;
     background: var(--red);
+    border-radius: 1px;
     transition: width 0.5s ease;
-    box-shadow: 0 0 10px var(--red-glow);
+    box-shadow: 0 0 8px var(--red-glow);
   }
 
   .question-card {
     width: 100%;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    padding: 40px 32px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 28px 20px;
     backdrop-filter: blur(20px);
     animation: cardIn 0.5s ease;
-    position: relative;
   }
 
-  .question-card::before {
-    content: 'CLASSIFIED';
-    position: absolute;
-    top: 12px;
-    right: 16px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 3px;
-    color: rgba(196,28,28,0.25);
-  }
-
-  @keyframes cardIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+  @media (min-width: 640px) {
+    .question-card {
+      padding: 36px 28px;
+    }
   }
 
   .question-text {
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 700;
-    font-size: clamp(1.1rem, 4vw, 1.6rem);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.4rem, 5vw, 2rem);
     letter-spacing: 1px;
-    line-height: 1.4;
+    line-height: 1.2;
     text-align: center;
-    margin-bottom: 36px;
+    margin-bottom: 28px;
     color: #fff;
-    text-shadow: 0 0 20px rgba(255,255,255,0.1);
   }
 
   .options-grid {
     display: grid;
-    gap: 12px;
+    gap: 10px;
     width: 100%;
   }
 
   .options-grid.two-col {
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 12px;
   }
 
   .options-grid.four-col {
@@ -323,61 +435,54 @@
   }
 
   .btn-option {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 1rem;
-    padding: 16px 24px;
-    background: rgba(196,28,28,0.05);
-    border: 1px solid rgba(196,28,28,0.2);
-    color: rgba(255,255,255,0.8);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: #fff;
     cursor: pointer;
     transition: all 0.25s ease;
-    position: relative;
-    overflow: hidden;
-    text-transform: uppercase;
+    min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .btn-option::before {
-    content: '[ ';
-    color: var(--red-dim);
-  }
-
-  .btn-option::after {
-    content: ' ]';
-    color: var(--red-dim);
+  @media (min-width: 640px) {
+    .btn-option {
+      font-size: 1rem;
+      padding: 16px 20px;
+    }
   }
 
   .btn-option:hover:not(.disabled) {
-    background: rgba(196,28,28,0.15);
-    border-color: var(--red);
-    color: #fff;
-    text-shadow: 0 0 10px var(--red-glow);
-    box-shadow: 0 0 20px rgba(196,28,28,0.1);
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.2);
+    transform: translateY(-1px);
+  }
+
+  .btn-option:active:not(.disabled) {
+    transform: scale(0.97);
   }
 
   .btn-option.correct {
-    background: rgba(0,255,65,0.08);
+    background: rgba(57,255,20,0.08);
     border-color: var(--correct);
     color: var(--correct);
-    box-shadow: 0 0 20px rgba(0,255,65,0.15);
-    text-shadow: 0 0 10px rgba(0,255,65,0.5);
+    box-shadow: 0 0 15px var(--correct-glow);
   }
-
-  .btn-option.correct::before,
-  .btn-option.correct::after { color: rgba(0,255,65,0.4); }
 
   .btn-option.incorrect {
-    background: rgba(255,42,42,0.08);
+    background: rgba(239,68,68,0.08);
     border-color: var(--incorrect);
     color: var(--incorrect);
-    box-shadow: 0 0 20px rgba(255,42,42,0.15);
+    box-shadow: 0 0 15px var(--incorrect-glow);
   }
-
-  .btn-option.incorrect::before,
-  .btn-option.incorrect::after { color: rgba(255,42,42,0.4); }
 
   .btn-option.disabled {
     cursor: default;
-    opacity: 0.3;
+    opacity: 0.35;
   }
 
   .btn-option.disabled.correct {
@@ -387,235 +492,184 @@
   /* Feedback */
   .feedback {
     width: 100%;
-    margin-top: 20px;
-    padding: 24px;
+    margin-top: 16px;
+    padding: 20px;
+    border-radius: 10px;
     animation: feedbackIn 0.4s ease;
     display: none;
-    border-left: 2px solid;
   }
 
   .feedback.show { display: block; }
 
-  @keyframes feedbackIn {
-    from { opacity: 0; transform: translateX(-10px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-
   .feedback.correct-fb {
-    background: rgba(0,255,65,0.03);
-    border-left-color: var(--correct);
+    background: rgba(57,255,20,0.04);
+    border: 1px solid rgba(57,255,20,0.15);
   }
 
   .feedback.incorrect-fb {
-    background: rgba(255,42,42,0.03);
-    border-left-color: var(--incorrect);
+    background: rgba(239,68,68,0.04);
+    border: 1px solid rgba(239,68,68,0.15);
   }
 
   .feedback-verdict {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
     font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: 3px;
-    margin-bottom: 8px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
   }
 
-  .feedback.correct-fb .feedback-verdict { color: var(--correct); }
-  .feedback.incorrect-fb .feedback-verdict { color: var(--incorrect); }
+  .feedback.correct-fb .feedback-verdict { color: var(--correct); text-shadow: 0 0 8px var(--correct-glow); }
+  .feedback.incorrect-fb .feedback-verdict { color: var(--incorrect); text-shadow: 0 0 8px var(--incorrect-glow); }
 
   .feedback-text {
     font-size: 0.85rem;
-    line-height: 1.7;
-    color: rgba(255,255,255,0.55);
+    line-height: 1.6;
+    color: rgba(255,255,255,0.6);
   }
 
   .btn-next {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.95rem;
-    letter-spacing: 3px;
-    padding: 14px 48px;
-    margin-top: 32px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 14px 40px;
+    margin-top: 24px;
     background: transparent;
-    border: 1px solid rgba(196,28,28,0.25);
-    color: rgba(196,28,28,0.6);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.6);
     cursor: pointer;
     transition: all 0.3s ease;
     display: none;
-    text-transform: uppercase;
+    min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .btn-next.show { display: inline-block; }
 
   .btn-next:hover {
     border-color: var(--red);
-    color: var(--red-bright);
-    box-shadow: 0 0 20px rgba(196,28,28,0.15);
-    text-shadow: 0 0 10px var(--red-glow);
+    color: var(--red);
+    box-shadow: 0 0 12px rgba(255,0,0,0.15);
   }
+
+  .btn-next:active { transform: scale(0.97); }
 
   /* ==================== RESULTS ==================== */
   .results-score {
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 900;
+    font-family: 'Bebas Neue', sans-serif;
     font-size: clamp(5rem, 20vw, 9rem);
     line-height: 1;
-    color: var(--red-bright);
-    text-shadow:
-      0 0 20px var(--red-glow),
-      0 0 60px var(--red-glow),
-      0 0 100px rgba(196,28,28,0.2);
+    color: var(--red);
+    text-shadow: 0 0 40px var(--red-glow), 0 0 80px rgba(255,0,0,0.1);
     animation: scaleIn 0.6s ease;
   }
 
   .results-label {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
     letter-spacing: 5px;
     text-transform: uppercase;
-    color: rgba(196,28,28,0.4);
+    color: rgba(255,255,255,0.3);
     margin-bottom: 12px;
   }
 
-  .results-label::before { content: '>> '; }
-
   .results-message {
     font-size: 0.95rem;
-    color: rgba(255,255,255,0.45);
-    margin-bottom: 48px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 40px;
     text-align: center;
-    max-width: 360px;
+    max-width: 300px;
     line-height: 1.6;
   }
 
-  .btn-replay {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 1rem;
-    letter-spacing: 4px;
-    padding: 16px 56px;
-    background: transparent;
-    border: 1px solid var(--red);
-    color: var(--red-bright);
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
+  .results-email {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.2);
+    margin-top: 24px;
+    letter-spacing: 1px;
   }
 
-  .btn-replay::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--red);
-    transform: translateX(-101%);
-    transition: transform 0.3s ease;
-    z-index: -1;
-  }
-
-  .btn-replay:hover {
-    color: #fff;
-    box-shadow: 0 0 30px var(--red-glow);
-  }
-
-  .btn-replay:hover::before {
-    transform: translateX(0);
-  }
-
-  /* Confetti canvas */
-  #confetti {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 10;
-  }
-
-  /* ==================== SECRET / COUNTDOWN ==================== */
+  /* ==================== COUNTDOWN & SECRET ==================== */
   .countdown-number {
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 900;
-    font-size: clamp(8rem, 30vw, 14rem);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(7rem, 28vw, 12rem);
     line-height: 1;
-    color: var(--red-bright);
-    text-shadow:
-      0 0 20px var(--red-glow),
-      0 0 60px var(--red-glow),
-      0 0 120px rgba(196,28,28,0.3);
+    color: var(--red);
+    text-shadow: 0 0 50px var(--red-glow), 0 0 100px rgba(255,0,0,0.15);
     animation: pulse 0.8s ease-in-out infinite;
   }
 
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.08); }
-  }
-
   .countdown-label {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
     letter-spacing: 6px;
-    color: rgba(196,28,28,0.5);
-    margin-bottom: 24px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 20px;
   }
 
   .secret-title {
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 900;
-    font-size: clamp(1.2rem, 4vw, 1.6rem);
-    letter-spacing: 5px;
-    color: var(--red-bright);
-    text-shadow: 0 0 20px var(--red-glow);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--red);
+    text-shadow: 0 0 12px var(--red-glow);
     margin-bottom: 8px;
     animation: fadeIn 0.6s ease;
   }
 
   .secret-warning {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.75rem;
-    color: rgba(196,28,28,0.35);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.25);
     letter-spacing: 3px;
-    margin-bottom: 32px;
-    animation: blink 2s step-end infinite;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    animation: fadeIn 0.8s ease;
   }
 
   .secret-text {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: clamp(1.2rem, 4vw, 1.8rem);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.6rem, 6vw, 2.8rem);
     letter-spacing: 2px;
     text-align: center;
-    color: var(--correct);
-    text-shadow: 0 0 15px rgba(0,255,65,0.4);
-    line-height: 1.5;
-    max-width: 500px;
+    color: #fff;
+    line-height: 1.3;
+    max-width: 440px;
     animation: secretReveal 1s ease;
-    margin-bottom: 32px;
-  }
-
-  @keyframes secretReveal {
-    from { opacity: 0; transform: translateY(20px); filter: blur(10px); }
-    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+    margin-bottom: 28px;
   }
 
   .flag-container {
     position: relative;
-    width: 200px;
-    height: 133px;
-    margin-bottom: 40px;
+    width: 160px;
+    height: 107px;
+    margin-bottom: 32px;
     animation: secretReveal 1.2s ease;
+  }
+
+  @media (min-width: 640px) {
+    .flag-container { width: 200px; height: 133px; }
   }
 
   .flag {
     width: 100%;
     height: 100%;
+    border-radius: 6px;
     overflow: hidden;
     position: relative;
     animation: wave 2s ease-in-out infinite;
-    box-shadow: 0 0 30px rgba(196,28,28,0.2);
-    border: 1px solid rgba(196,28,28,0.3);
-  }
-
-  @keyframes wave {
-    0%, 100% { transform: perspective(300px) rotateY(-3deg) skewY(0.5deg); }
-    25% { transform: perspective(300px) rotateY(3deg) skewY(-1deg); }
-    50% { transform: perspective(300px) rotateY(-2deg) skewY(0.8deg); }
-    75% { transform: perspective(300px) rotateY(4deg) skewY(-0.5deg); }
+    box-shadow: 0 0 20px rgba(220,38,38,0.2);
   }
 
   .flag-stripe { width: 100%; height: 33.33%; }
@@ -629,7 +683,8 @@
     top: -10px;
     width: 4px;
     height: calc(100% + 20px);
-    background: linear-gradient(to bottom, #666, #333);
+    background: linear-gradient(to bottom, #ccc, #888);
+    border-radius: 2px;
   }
 
   .flag-pole-top {
@@ -638,49 +693,60 @@
     top: -16px;
     width: 10px;
     height: 10px;
-    background: var(--red);
+    background: #FFD700;
     border-radius: 50%;
-    box-shadow: 0 0 10px var(--red-glow);
   }
 
-  .btn-secret-back {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.9rem;
-    letter-spacing: 3px;
-    padding: 14px 48px;
-    background: transparent;
-    border: 1px solid rgba(196,28,28,0.2);
-    color: rgba(196,28,28,0.4);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-  }
-
-  .btn-secret-back:hover {
-    border-color: var(--red);
-    color: var(--red-bright);
-    text-shadow: 0 0 10px var(--red-glow);
+  /* Confetti */
+  #confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
   }
 </style>
 </head>
 <body>
 
-<canvas id="matrix-bg"></canvas>
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 <canvas id="confetti"></canvas>
 
 <div class="game-container">
 
-  <!-- WELCOME -->
-  <div id="welcome" class="screen active">
-    <h1 class="welcome-title">
-      <span class="line-1">TRIVIAL</span>
-      <span class="line-2">FDF</span>
-    </h1>
+  <!-- LANDING -->
+  <div id="landing" class="screen active">
+    <div class="landing-logo flicker">
+      <h1 class="landing-title">
+        <span class="line-1">TRIVIAL</span>
+        <span class="line-2">FDF</span>
+      </h1>
+    </div>
     <div class="deco-line"></div>
-    <p class="welcome-subtitle">// festival de fiestas <span class="cursor-blink"></span></p>
-    <button class="btn-play" onclick="startGame()">ACCEDER</button>
+    <p class="landing-subtitle">Festival de Fiestas</p>
+
+    <form class="landing-form" id="landing-form" onsubmit="handleLandingSubmit(event)">
+      <div class="form-group">
+        <label class="form-label" for="email-input">Correo electr&oacute;nico</label>
+        <input
+          class="form-input"
+          id="email-input"
+          type="email"
+          placeholder="tu@email.com"
+          autocomplete="email"
+          inputmode="email"
+          required
+        >
+        <span class="form-error" id="email-error"></span>
+      </div>
+      <button class="btn-play" type="submit">JUGAR</button>
+    </form>
+
+    <div class="already-played" id="already-played">
+      <div class="already-played-icon">🔒</div>
+      <div class="already-played-text">Ya has jugado</div>
+      <p class="already-played-sub">Solo se puede jugar una vez por correo.<br>¡Gracias por participar!</p>
+    </div>
   </div>
 
   <!-- QUESTION -->
@@ -695,27 +761,27 @@
       <div class="feedback-verdict" id="feedback-verdict"></div>
       <div class="feedback-text" id="feedback-text"></div>
     </div>
-    <button class="btn-next" id="btn-next" onclick="nextQuestion()">[ siguiente ]</button>
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">SIGUIENTE</button>
   </div>
 
   <!-- RESULTS -->
   <div id="results" class="screen">
-    <div class="results-label">puntuacion</div>
+    <div class="results-label">Puntuaci&oacute;n</div>
     <div class="results-score" id="results-score"></div>
     <p class="results-message" id="results-message"></p>
-    <button class="btn-replay" onclick="restartGame()">[ reintentar ]</button>
+    <div class="results-email" id="results-email"></div>
   </div>
 
   <!-- COUNTDOWN -->
   <div id="countdown-screen" class="screen">
-    <div class="countdown-label">// PISTA EN...</div>
+    <div class="countdown-label">Pista en...</div>
     <div class="countdown-number" id="countdown-number">5</div>
   </div>
 
   <!-- SECRET -->
   <div id="secret-screen" class="screen">
-    <div class="secret-title">PISTA SECRETA</div>
-    <p class="secret-warning">// NO SE LA CUENTES A NADIE //</p>
+    <div class="secret-title">Pista secreta</div>
+    <p class="secret-warning">No se la cuentes a nadie</p>
     <div class="flag-container">
       <div class="flag-pole"></div>
       <div class="flag-pole-top"></div>
@@ -726,58 +792,11 @@
       </div>
     </div>
     <div class="secret-text" id="secret-text"></div>
-    <button class="btn-secret-back" onclick="restartGame()">[ reintentar ]</button>
   </div>
 
 </div>
 
 <script>
-// ==================== MATRIX RAIN BACKGROUND ====================
-const matrixCanvas = document.getElementById('matrix-bg');
-const matrixCtx = matrixCanvas.getContext('2d');
-
-function resizeMatrix() {
-  matrixCanvas.width = window.innerWidth;
-  matrixCanvas.height = window.innerHeight;
-}
-resizeMatrix();
-
-const chars = '01001010110100101010011010010110100101'.split('');
-const fontSize = 14;
-let columns = Math.floor(matrixCanvas.width / fontSize);
-let drops = Array(columns).fill(1);
-
-function drawMatrix() {
-  matrixCtx.fillStyle = 'rgba(10, 0, 0, 0.06)';
-  matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
-
-  matrixCtx.fillStyle = 'rgba(196, 28, 28, 0.35)';
-  matrixCtx.font = fontSize + 'px Share Tech Mono';
-
-  for (let i = 0; i < drops.length; i++) {
-    const text = chars[Math.floor(Math.random() * chars.length)];
-    matrixCtx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-    if (drops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
-      drops[i] = 0;
-    }
-    drops[i]++;
-  }
-}
-
-setInterval(drawMatrix, 50);
-
-window.addEventListener('resize', () => {
-  resizeMatrix();
-  columns = Math.floor(matrixCanvas.width / fontSize);
-  drops = Array(columns).fill(1);
-
-  const confetti = document.getElementById('confetti');
-  confetti.width = window.innerWidth;
-  confetti.height = window.innerHeight;
-});
-
-// ==================== GAME DATA ====================
 const questions = [
   {
     text: "¿HA ESTADO SAIKO EN FDF?",
@@ -809,9 +828,54 @@ const questions = [
   }
 ];
 
+const STORAGE_KEY = 'trivial_fdf_played';
 let currentQ = 0;
 let score = 0;
 let answered = false;
+let playerEmail = '';
+
+function hasPlayed(email) {
+  const played = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  return played.includes(email.trim().toLowerCase());
+}
+
+function markPlayed(email) {
+  const played = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  const normalized = email.trim().toLowerCase();
+  if (!played.includes(normalized)) {
+    played.push(normalized);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(played));
+  }
+}
+
+function handleLandingSubmit(e) {
+  e.preventDefault();
+  const input = document.getElementById('email-input');
+  const errorEl = document.getElementById('email-error');
+  const email = input.value.trim().toLowerCase();
+
+  if (!email) {
+    errorEl.textContent = 'Introduce tu correo electrónico';
+    errorEl.classList.add('show');
+    return;
+  }
+  if (!/^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$/.test(email)) {
+    errorEl.textContent = 'Introduce un correo válido';
+    errorEl.classList.add('show');
+    return;
+  }
+
+  errorEl.classList.remove('show');
+
+  if (hasPlayed(email)) {
+    document.getElementById('landing-form').style.display = 'none';
+    document.getElementById('already-played').classList.add('show');
+    return;
+  }
+
+  playerEmail = email;
+  startGame();
+}
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -832,7 +896,6 @@ function renderQuestion() {
 
   document.getElementById('counter').textContent = `PREGUNTA ${currentQ + 1} / ${questions.length}`;
   document.getElementById('progress').style.width = `${((currentQ) / questions.length) * 100}%`;
-
   document.getElementById('question-text').textContent = q.text;
 
   const grid = document.getElementById('options-grid');
@@ -867,24 +930,19 @@ function selectAnswer(index) {
 
   const buttons = document.querySelectorAll('.btn-option');
   buttons.forEach((btn, i) => {
-    if (i === q.correct) {
-      btn.classList.add('correct');
-    } else if (i === index && !isCorrect) {
-      btn.classList.add('incorrect');
-    }
-    if (i !== q.correct && i !== index) {
-      btn.classList.add('disabled');
-    }
+    if (i === q.correct) btn.classList.add('correct');
+    else if (i === index && !isCorrect) btn.classList.add('incorrect');
+    if (i !== q.correct && i !== index) btn.classList.add('disabled');
     btn.classList.add('disabled');
   });
 
   const fb = document.getElementById('feedback');
   fb.classList.add('show', isCorrect ? 'correct-fb' : 'incorrect-fb');
-  document.getElementById('feedback-verdict').textContent = isCorrect ? '> CORRECTO' : '> ERROR';
+  document.getElementById('feedback-verdict').textContent = isCorrect ? 'CORRECTO' : 'INCORRECTO';
   document.getElementById('feedback-text').textContent = q.explanation;
 
   const nextBtn = document.getElementById('btn-next');
-  nextBtn.textContent = currentQ < questions.length - 1 ? '[ siguiente ]' : '[ ver resultado ]';
+  nextBtn.textContent = currentQ < questions.length - 1 ? 'SIGUIENTE' : 'VER RESULTADO';
   nextBtn.classList.add('show');
 }
 
@@ -898,6 +956,7 @@ function nextQuestion() {
 }
 
 function showResults() {
+  markPlayed(playerEmail);
   const pct = score / questions.length;
 
   if (pct === 1) {
@@ -909,10 +968,11 @@ function showResults() {
     document.getElementById('results-score').textContent = `${score}/${questions.length}`;
 
     let msg = '';
-    if (pct >= 0.5) msg = 'Acceso parcial. Necesitas acertarlas TODAS para desbloquear la pista secreta.';
-    else msg = 'Acceso denegado. Aciértalas todas para desbloquear la información clasificada.';
+    if (pct >= 0.5) msg = '¡No está mal! Pero necesitas acertarlas TODAS para desbloquear la pista secreta.';
+    else msg = 'Necesitas venir a más ediciones de FDF... Aciértalas todas para ver la pista secreta.';
 
     document.getElementById('results-message').textContent = msg;
+    document.getElementById('results-email').textContent = playerEmail;
     if (pct >= 0.5) launchConfetti();
   }
 }
@@ -955,10 +1015,6 @@ function showSecret() {
   launchConfetti();
 }
 
-function restartGame() {
-  startGame();
-}
-
 // ==================== CONFETTI ====================
 function launchConfetti() {
   const canvas = document.getElementById('confetti');
@@ -966,15 +1022,15 @@ function launchConfetti() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const colors = ['#c41c1c', '#ff2a2a', '#00ff41', '#fff', '#8b0000'];
+  const colors = ['#dc2626', '#ef4444', '#fff', '#fca5a5', '#7f1d1d'];
   const pieces = [];
 
-  for (let i = 0; i < 120; i++) {
+  for (let i = 0; i < 100; i++) {
     pieces.push({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height - canvas.height,
-      w: Math.random() * 8 + 4,
-      h: Math.random() * 6 + 2,
+      w: Math.random() * 8 + 3,
+      h: Math.random() * 5 + 2,
       color: colors[Math.floor(Math.random() * colors.length)],
       vy: Math.random() * 3 + 2,
       vx: (Math.random() - 0.5) * 2,
@@ -1014,6 +1070,12 @@ function launchConfetti() {
 
   draw();
 }
+
+window.addEventListener('resize', () => {
+  const canvas = document.getElementById('confetti');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
 </script>
 
 </body>
