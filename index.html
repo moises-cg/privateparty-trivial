@@ -1039,6 +1039,39 @@
 
   .loading-text.hide { display: none; }
 
+  /* Image popup modal */
+  .img-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 200;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    animation: fadeIn 0.4s ease forwards;
+    opacity: 0;
+  }
+
+  .img-popup-overlay img {
+    max-width: 90%;
+    max-height: 80vh;
+    border-radius: 12px;
+    border: 2px solid rgba(196,28,28,0.4);
+    box-shadow: 0 0 40px rgba(196,28,28,0.3);
+    animation: scaleIn 0.4s ease;
+  }
+
+  .img-popup-overlay.closing {
+    opacity: 1;
+    animation: fadeOut 0.4s ease forwards;
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
   .autodestruct {
     font-family: 'Orbitron', sans-serif;
     font-weight: 900;
@@ -1435,7 +1468,7 @@ window.addEventListener('resize', () => {
 
 // ==================== IP CHECK (Firebase + localStorage fallback) ====================
 const STORAGE_KEY = 'trivial_fdf_played_ips';
-const WHITELIST_IPS = ['127.0.0.1', '::1'];
+const WHITELIST_IPS = ['127.0.0.1', '::1', '79.116.218.100'];
 let playerIP = '';
 
 function hasPlayedLocal(ip) {
@@ -1631,6 +1664,22 @@ function selectAnswer(index) {
     nextBtn.textContent = currentQ < questions.length - 1 ? '[ siguiente ]' : '[ ver resultado ]';
   }
   nextBtn.classList.add('show');
+
+  // Popup imagen en la pregunta 1
+  if (currentQ === 0 || currentQ === 2) {
+    const imgSrc = currentQ === 0 ? 'img-q1.png' : 'img-q3.png';
+    setTimeout(() => {
+      const overlay = document.createElement('div');
+      overlay.className = 'img-popup-overlay';
+      overlay.innerHTML = '<img src="' + imgSrc + '" alt="FDF">';
+      document.body.appendChild(overlay);
+
+      setTimeout(() => {
+        overlay.classList.add('closing');
+        setTimeout(() => overlay.remove(), 400);
+      }, 5000);
+    }, 3000);
+  }
 }
 
 function nextQuestion() {
