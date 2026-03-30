@@ -884,6 +884,8 @@
     cursor: pointer;
     transition: all 0.3s ease;
     text-transform: uppercase;
+    min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .btn-secret-back:hover {
@@ -922,9 +924,13 @@
       margin-bottom: 24px;
     }
 
-    .options-grid.two-col,
+    .options-grid.two-col {
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
     .options-grid.four-col {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
 
@@ -1054,12 +1060,13 @@
   }
 
   .img-popup-overlay img {
-    max-width: 90%;
-    max-height: 80vh;
+    max-width: 85%;
+    max-height: 70vh;
     border-radius: 12px;
     border: 2px solid rgba(196,28,28,0.4);
     box-shadow: 0 0 40px rgba(196,28,28,0.3);
     animation: scaleIn 0.4s ease;
+    object-fit: contain;
   }
 
   .img-popup-overlay.closing {
@@ -1192,7 +1199,7 @@
       </div>
     </div>
     <div class="secret-text" id="secret-text"></div>
-    <p class="secret-warning" style="animation:none; margin-top: 16px;">// NO LE CUENTES A NADIE... //</p>
+    <p class="secret-warning" style="margin-top: 16px;">// NO LE CUENTES A NADIE... //</p>
     <div class="autodestruct" id="autodestruct"></div>
   </div>
 
@@ -1565,7 +1572,7 @@ const questions = [
     options: ["Quevedo", "Jhayco", "JC Reyes", "Ballesteros"],
     correct: 3,
     layout: "four-col",
-    explanation: "Ballesteros nunca ha actuado en FDF. Quevedo sí pisó el escenario en 2022."
+    explanation: "Ballesteros nunca ha actuado en FDF.<br>Quevedo sí pisó el escenario en 2022."
   },
   {
     text: "¿MVRK HA CANTADO EN EL ESCENARIO DE FDF?",
@@ -1575,7 +1582,7 @@ const questions = [
     explanation: "¡Sí! MVRK apareció como invitado sorpresa con Raúl Clyde en 2024."
   },
   {
-    text: "¿QUÉ LLEVABA PUESTO OMAR MONTES CUANDO SALIÓ A FESTIVAL DE FIESTAS EN 2022 (1ª EDICIÓN)?",
+    text: "¿QUÉ LLEVABA PUESTO OMAR MONTES CUANDO SALIÓ A FDF EN 2022 (1ª EDICIÓN)?",
     options: ["Un pasamontañas", "Una riñonera", "Un cocodrilo dorado", "Un oso de peluche"],
     correct: 0,
     layout: "four-col",
@@ -1655,7 +1662,7 @@ function selectAnswer(index) {
   const fb = document.getElementById('feedback');
   fb.classList.add('show', isCorrect ? 'correct-fb' : 'incorrect-fb');
   document.getElementById('feedback-verdict').textContent = isCorrect ? '> CORRECTO' : '> ERROR';
-  document.getElementById('feedback-text').textContent = q.explanation;
+  document.getElementById('feedback-text').innerHTML = q.explanation;
 
   const nextBtn = document.getElementById('btn-next');
   if (!isCorrect) {
@@ -1665,8 +1672,11 @@ function selectAnswer(index) {
   }
   nextBtn.classList.add('show');
 
-  // Popup imagen en la pregunta 1
+  // Popup imagen en preguntas 1 y 3: deshabilitar botón hasta que termine
   if (currentQ === 0 || currentQ === 2) {
+    nextBtn.disabled = true;
+    nextBtn.style.opacity = '0.3';
+    nextBtn.style.pointerEvents = 'none';
     const imgSrc = currentQ === 0 ? 'img-q1.png' : 'img-q3.png';
     setTimeout(() => {
       const overlay = document.createElement('div');
@@ -1676,7 +1686,12 @@ function selectAnswer(index) {
 
       setTimeout(() => {
         overlay.classList.add('closing');
-        setTimeout(() => overlay.remove(), 400);
+        setTimeout(() => {
+          overlay.remove();
+          nextBtn.disabled = false;
+          nextBtn.style.opacity = '';
+          nextBtn.style.pointerEvents = '';
+        }, 400);
       }, 5000);
     }, 3000);
   }
